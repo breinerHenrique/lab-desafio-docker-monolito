@@ -1,0 +1,36 @@
+version: '3.3'
+
+networks: 
+  app_net:
+    driver: bridge
+
+volumes: 
+  mongo_vol:
+
+services:
+    mongodb:
+        image: mongo:4.4.6
+        ports:
+            - 27017:27017
+        volumes: 
+            - mongo_vol:/data/db
+        networks:
+            - app_net
+        environment:
+          MONGO_INITDB_ROOT_USERNAME: mongouser
+          MONGO_INITDB_ROOT_PASSWORD: mongopwd
+
+    app_monolito:
+        image: breinerhenrique/desafio-app-monolito:v2
+        ports:
+          - 5000:5000
+        networks:
+          - app_net
+        depends_on:
+          - mongodb
+        environment:
+          MONGODB_DB: admin
+          MONGODB_HOST: mongodb
+          MONGODB_PORT: 27017
+          MONGODB_USERNAME: mongouser
+          MONGODB_PASSWORD: mongopwd
